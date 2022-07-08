@@ -1,5 +1,5 @@
 org: abheist
-app: udagram-app
+app: serverless-todo-app
 service: udagram-app
 
 plugins:
