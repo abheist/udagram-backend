@@ -77,7 +77,7 @@ function getUploadUrl(imageId) {
 }
 
 function getReadImageUrl(imageId) {
-    return `https:://${bucketName}.s3.amazonaws.com/${imageId}`
+    return `https://${bucketName}.s3.amazonaws.com/${imageId}`
 }
 
 function getCurrentTimestamp() {
