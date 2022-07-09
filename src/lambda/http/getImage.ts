@@ -1,24 +1,10 @@
-import {APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda'
+import {APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult} from 'aws-lambda'
 import 'source-map-support/register'
-import * as AWS from 'aws-sdk'
-
-const docClient = new AWS.DynamoDB.DocumentClient()
-
-const imagesTable = process.env.IMAGES_TABLE
-const imageIdIndex = process.env.IMAGE_ID_INDEX
+import {get_image} from "../../businessLogic/utils";
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
 
-    const imageId = event.pathParameters.imageId
-
-    const response = await docClient.query({
-        TableName: imagesTable,
-        IndexName: imageIdIndex,
-        KeyConditionExpression: 'imageId = :imageId',
-        ExpressionAttributeValues: {
-            ':imageId': imageId
-        }
-    }).promise()
+    const response = await get_image(event);
 
     if (response.Count !== 0) {
         return {

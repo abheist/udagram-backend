@@ -1,11 +1,6 @@
-import {APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda'
+import {APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult} from 'aws-lambda'
 import 'source-map-support/register'
-import * as AWS from 'aws-sdk'
-
-const docClient = new AWS.DynamoDB.DocumentClient()
-
-const groupsTable = process.env.GROUPS_TABLE
-const imagesTable = process.env.IMAGES_TABLE
+import {getImagesForGroup, groupExists} from "../../businessLogic/utils";
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
 
@@ -36,25 +31,3 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     }
 }
 
-async function getImagesForGroup(groupId: string) {
-    const response = await docClient.query({
-        TableName: imagesTable,
-        KeyConditionExpression: 'groupId = :groupId',
-        ExpressionAttributeValues: {
-            ':groupId': groupId
-        },
-        ScanIndexForward: false
-    }).promise()
-    return response.Items
-}
-
-async function groupExists(groupId: string) {
-    const response = await docClient
-        .get({
-            TableName: groupsTable,
-            Key: {
-                id: groupId
-            }
-        }).promise()
-    return !!response.Item
-}
