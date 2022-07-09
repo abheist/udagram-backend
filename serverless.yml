@@ -80,11 +80,6 @@ functions:
           path: groups
           cors: true
           reqValidatorName: RequestBodyValidator
-          documentation:
-            summary: Create a new group
-            description: Create a new group
-            requestModels:
-              'application/json': GroupRequest
   
   GetImages:
     handler: src/lambda/http/getImages.handler
@@ -110,11 +105,6 @@ functions:
           path: groups/{groupId}/images
           cors: true
           reqValidatorName: RequestBodyValidator
-          documentation:
-            summary: Create a new image in a group
-            description: Create a new image in a group
-            requestModels:
-              'application/json': CreateImageRequest
 
 resources:
   Resources:
