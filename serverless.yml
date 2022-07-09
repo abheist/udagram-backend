@@ -32,6 +32,7 @@ provider:
         - dynamodb:Scan
         - dynamodb:PutItem
         - dynamodb:GetItem
+        - dynamodb:DeleteItem
       Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.GROUPS_TABLE}
     - Effect: Allow
       Action:
@@ -98,7 +99,16 @@ functions:
           path: groups/{groupId}/images
           cors: true
           auth: Auth
-  
+
+  DeleteGroup:
+    handler: src/lambda/http/deleteGroup.handler
+    events:
+      - http:
+          method: delete
+          path: groups/{groupId}
+          cors: true
+          auth: Auth
+
   GetImage:
     handler: src/lambda/http/getImage.handler
     events:

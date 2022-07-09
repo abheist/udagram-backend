@@ -43,6 +43,15 @@ export async function get_image(event: APIGatewayProxyEventBase<APIGatewayEventD
     }).promise()
 }
 
+export async function delete_group(event: APIGatewayProxyEventBase<APIGatewayEventDefaultAuthorizerContext>) {
+    const id = event.pathParameters.groupId
+
+    return await docClient.delete({
+        TableName: groupsTable,
+        Key: {id: id}
+    }).promise()
+}
+
 export async function getGroups() {
     const result = await docClient.scan({
         TableName: groupsTable
