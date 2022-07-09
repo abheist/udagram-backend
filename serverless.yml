@@ -6,6 +6,7 @@ plugins:
   - serverless-webpack
   - serverless-aws-documentation
   - serverless-reqvalidator-plugin
+#  - serverless-iam-roles-per-function
 
 provider:
   name: aws
@@ -15,10 +16,12 @@ provider:
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     GROUPS_TABLE: Groups-${self:provider.stage}
+    GROUPS_BY_USER_INDEX: GroupsByUserIndex
     IMAGES_TABLE: Images-${self:provider.stage}
     IMAGE_ID_INDEX: ImageIdIndex
     IMAGES_S3_BUCKET: abheist-serverless-udagram-images-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
+    AUTH_0_JWKS_URL: https://abheist.us.auth0.com/.well-known/jwks.json
   
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
@@ -64,6 +67,10 @@ custom:
     includeModules: true
 
 functions:
+
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.handler
+
   GetGroups:
     handler: src/lambda/http/getGroups.handler
     events:
@@ -71,6 +78,7 @@ functions:
           method: get
           path: groups
           cors: true
+          auth: Auth
   
   CreateGroup:
     handler: src/lambda/http/createGroup.handler
@@ -79,6 +87,7 @@ functions:
           method: post
           path: groups
           cors: true
+          auth: Auth
           reqValidatorName: RequestBodyValidator
   
   GetImages:
@@ -88,6 +97,7 @@ functions:
           method: get
           path: groups/{groupId}/images
           cors: true
+          auth: Auth
   
   GetImage:
     handler: src/lambda/http/getImage.handler
@@ -96,6 +106,7 @@ functions:
           method: get
           path: images/{imageId}
           cors: true
+          auth: Auth
   
   CreateImage:
     handler: src/lambda/http/createImage.handler
@@ -104,6 +115,7 @@ functions:
           method: post
           path: groups/{groupId}/images
           cors: true
+          auth: Auth
           reqValidatorName: RequestBodyValidator
 
 resources:
@@ -123,6 +135,8 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
@@ -138,6 +152,8 @@ resources:
           - AttributeName: timestamp
             AttributeType: S
           - AttributeName: imageId
+            AttributeType: S
+          - AttributeName: userId
             AttributeType: S
         KeySchema:
           - AttributeName: groupId
