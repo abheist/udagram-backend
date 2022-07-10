@@ -94,6 +94,13 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action:
+          - dynamodb:Scan
+          - dynamodb:PutItem
+          - dynamodb:GetItem
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.GROUPS_TABLE}
+      - Effect: Allow
+        Action:
           - dynamodb:Query
           - dynamodb:PutItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.IMAGES_TABLE}
